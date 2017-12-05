@@ -7,7 +7,11 @@ public class BloonsRunner {
 	
 	public static int WIDTH = 1000, HEIGHT = 550, PATH_WIDTH = 50;
 	public static String phase = "pregame";
-	public static int points = 0;
+	public static String gamePhase = "preround";
+	public static int round = 0;
+	public static int lastRound = -1;
+	public static int health = 50;
+	public static int money = 0;
 	public static GameMap map;
 	
 	public static void main(String[] args) {
