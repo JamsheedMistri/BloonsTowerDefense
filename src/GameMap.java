@@ -6,7 +6,7 @@ public abstract class GameMap {
 	}
 	
 	public abstract int[][] getCoordinates();
-	public abstract Path[][] getPath();
+	public abstract Tile[][] getPath();
 	public abstract void setName(String s);
 	public abstract String getName();
 }

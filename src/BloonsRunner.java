@@ -1,3 +1,6 @@
+import java.awt.Dimension;
+import java.util.ArrayList;
+
 import javax.swing.*;
 
 public class BloonsRunner {
@@ -14,6 +17,7 @@ public class BloonsRunner {
 		BloonsWindow w = new BloonsWindow();
 		f.add(w);
 		f.setSize(WIDTH, HEIGHT);
+		f.setResizable(false);
 		f.setLocationRelativeTo(null);
 		f.setVisible(true);
 	}
