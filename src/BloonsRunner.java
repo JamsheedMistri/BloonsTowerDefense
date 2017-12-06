@@ -15,8 +15,8 @@ public class BloonsRunner {
 	public static int health = 50;
 	public static int money = 0;
 	public static GameMap map;
-	public static Bloons[][] bloonArrays = {
-			
+	public static Bloon[][] maps = {
+		
 	};
 	
 	// Hardcode bloons

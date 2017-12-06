@@ -172,7 +172,7 @@ public class BloonsWindow extends JPanel implements ActionListener, KeyListener,
 	public void startRound() {
 		if (BloonsRunner.lastRound == BloonsRunner.round) {
 			BloonsRunner.round ++;
-			BloonsRunner.map = BloonsRunner.maps[round - 1];
+			BloonsRunner.currentBloons = BloonsRunner.maps[BloonsRunner.round - 1];
 			BloonsRunner.currentBloons[0].initiate(BloonsRunner.map.getCoordinates());
 			BloonsRunner.gamePhase = "game";
 		}
