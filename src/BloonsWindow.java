@@ -4,8 +4,9 @@ import javax.swing.*;
 
 public class BloonsWindow extends JPanel implements ActionListener, KeyListener, MouseListener, MouseMotionListener {
 	private static final long serialVersionUID = 1L;
-
-	Timer t = new Timer(5, this);
+	public static final int FPSDelay = 10;
+	
+	Timer t = new Timer(FPSDelay, this);
 	
 	// Pregame buttons
 	GameButton playButton = new GameButton(BloonsRunner.WIDTH / 2 - 100, BloonsRunner.HEIGHT / 2 + 60, 200, 60);
@@ -21,6 +22,12 @@ public class BloonsWindow extends JPanel implements ActionListener, KeyListener,
 	}
 	
 	public void actionPerformed(ActionEvent e) {
+		for (int i = 0; i < BloonsRunner.currentBloons.length; i ++) {
+			BloonsRunner.currentBloons[i].move(BloonsRunner.map.getCoordinates());
+			if (BloonsRunner.currentBloons[i].needsToSummonNextBloon.equals("true")) {
+				BloonsRunner.currentBloons[i + 1].initiate(BloonsRunner.map.getCoordinates());
+			}
+		}
 		repaint();
 	}
 	
@@ -79,9 +86,19 @@ public class BloonsWindow extends JPanel implements ActionListener, KeyListener,
 			g.drawString("Health: " + BloonsRunner.health, 210, (BloonsRunner.HEIGHT - 100) + 25);
 			g.drawString("Money: " + BloonsRunner.money, 410, (BloonsRunner.HEIGHT - 100) + 25);
 			
-			if (startRoundButton.hover) {
+			if (startRoundButton.hover && BloonsRunner.gamePhase == "pregame") {
 				g.setColor(new Color(22, 195, 221));
 				g.fillRect(BloonsRunner.WIDTH - 100, BloonsRunner.HEIGHT - 100, 100, 100);
+			}
+			
+			if (BloonsRunner.gamePhase == "pregame") {
+				g.setFont(new Font("Verdana", Font.BOLD, 15));
+				g.setColor(Color.WHITE);
+				g.drawString("START", (BloonsRunner.WIDTH - 100) + 20, (BloonsRunner.HEIGHT - 100) + 40);
+			} else if (BloonsRunner.gamePhase == "game") {
+				g.setFont(new Font("Verdana", Font.BOLD, 14));
+				g.setColor(Color.WHITE);
+				g.drawString("PLAYING...", (BloonsRunner.WIDTH - 100) + 5, (BloonsRunner.HEIGHT - 100) + 40);
 			}
 		// ------------------ POSTGAME CANVAS CODE ------------------ \\
 		} else if (BloonsRunner.phase == "postgame") {
@@ -155,8 +172,9 @@ public class BloonsWindow extends JPanel implements ActionListener, KeyListener,
 	public void startRound() {
 		if (BloonsRunner.lastRound == BloonsRunner.round) {
 			BloonsRunner.round ++;
+			BloonsRunner.map = BloonsRunner.maps[round - 1];
+			BloonsRunner.currentBloons[0].initiate(BloonsRunner.map.getCoordinates());
 			BloonsRunner.gamePhase = "game";
-			
 		}
 	}
 	
