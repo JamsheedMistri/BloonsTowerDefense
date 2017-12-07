@@ -1,46 +1,62 @@
+import java.awt.Color;
+import java.awt.Graphics;
 
 public class Bloon {
 	public String type;
 	private int[] coordinates;
 	public int layers;
 	public int currentDelay;
-	public String needsToSummonNextBloon;
+	public String needsToSummonNextBloon = "not started";
 	
-	// Red: 1 layer, speed 2000
-	// Blue: 2 layers, speed 1600
-	// Green: 3 layers, speed 1200
-	// Yellow: 4 layers, speed 800
-	// Pink: 5 layers, speed 400
-	// Cyan (small): 6 layers, speed 300
-	// Black (small): 7 layers, speed 300
-	// Clay: 8 layers, speed 1500
-	// Lead: 9 layers, speed 2000
+	// Red: 1 layer, speed 1000
+	// Blue: 2 layers, speed 900
+	// Green: 3 layers, speed 800
+	// Yellow: 4 layers, speed 700
+	// Pink: 5 layers, speed 600
+	// Cyan (small): 6 layers, speed 500
+	// Black (small): 7 layers, speed 400
+	// Clay: 8 layers, speed 1000
+	// Lead: 9 layers, speed 1500
 	
 	public Bloon(String s) {
-		switch (s) {
-			case ("red"): layers = 1;
-			case ("blue"): layers = 2;
-			case ("green"): layers = 3;
-			case ("yellow"): layers = 4;
-			case ("pink"): layers = 5;
-			case ("cyan"): layers = 6;
-			case ("black"): layers = 7;
-			case ("clay"): layers = 8;
-			case ("lead"): layers = 9;
+		type = s;
+		if (s.equals("red")) layers = 1;
+		if (s.equals("blue")) layers = 2;
+		if (s.equals("green")) layers = 3;
+		if (s.equals("yellow")) layers = 4;
+		if (s.equals("pink")) layers = 5;
+		if (s.equals("cyan")) layers = 6;
+		if (s.equals("black")) layers = 7;
+		if (s.equals("clay")) layers = 8;
+		if (s.equals("lead")) layers = 9;
+	}
+	
+	public Color getColor() {
+		switch (type) {
+			case ("red"): return Color.RED;
+			case ("blue"): return Color.BLUE;
+			case ("green"): return Color.GREEN;
+			case ("yellow"): return Color.YELLOW;
+			case ("pink"): return Color.PINK;
+			case ("cyan"): return Color.CYAN;
+			case ("black"): return Color.BLACK;
+			case ("clay"): return new Color(224, 155, 76);
+			case ("lead"): return Color.GRAY;
+			default: return null;
 		}
 	}
 	
 	public int getSpeed() {
 		switch (layers) {
-			case (1): return 2000;
-			case (2): return 1600;
-			case (3): return 1200;
-			case (4): return 800;
-			case (5): return 400;
-			case (6): return 300;
-			case (7): return 300;
-			case (8): return 1500;
-			case (9): return 2000;
+			case (1): return 1000;
+			case (2): return 900;
+			case (3): return 800;
+			case (4): return 700;
+			case (5): return 600;
+			case (6): return 500;
+			case (7): return 400;
+			case (8): return 1000;
+			case (9): return 1500;
 			default: return -1;
 		}
 	}
@@ -63,7 +79,7 @@ public class Bloon {
 		if (currentDelay >= getSpeed()) {
 			currentDelay = 0;
 			
-			if (needsToSummonNextBloon == null) {
+			if (needsToSummonNextBloon == "not started") {
 				needsToSummonNextBloon = "true";
 			} else if (needsToSummonNextBloon.equals("true")) {
 				needsToSummonNextBloon = "false";
@@ -77,6 +93,7 @@ public class Bloon {
 					} else {
 						coordinates = coordinatesParam[i + 1];
 					}
+					return;
 				}
 			}
 		}

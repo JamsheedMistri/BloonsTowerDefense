@@ -1,5 +1,7 @@
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Arrays;
+
 import javax.swing.*;
 
 public class BloonsWindow extends JPanel implements ActionListener, KeyListener, MouseListener, MouseMotionListener {
@@ -22,10 +24,19 @@ public class BloonsWindow extends JPanel implements ActionListener, KeyListener,
 	}
 	
 	public void actionPerformed(ActionEvent e) {
-		for (int i = 0; i < BloonsRunner.currentBloons.length; i ++) {
-			BloonsRunner.currentBloons[i].move(BloonsRunner.map.getCoordinates());
-			if (BloonsRunner.currentBloons[i].needsToSummonNextBloon.equals("true")) {
-				BloonsRunner.currentBloons[i + 1].initiate(BloonsRunner.map.getCoordinates());
+		if (BloonsRunner.gamePhase == "game" && BloonsRunner.phase == "game") {
+			for (int i = 0; i < BloonsRunner.currentBloons.length; i ++) {
+				BloonsRunner.currentBloons[i].move(BloonsRunner.map.getCoordinates());
+				if (BloonsRunner.currentBloons[i].needsToSummonNextBloon.equals("true") && i + 1 != BloonsRunner.currentBloons.length) {
+					BloonsRunner.currentBloons[i + 1].initiate(BloonsRunner.map.getCoordinates());
+				}
+			}
+			if (checkIfAllBloonsDead()) {
+				endRound();
+			}
+			if (BloonsRunner.health == 0) {
+				BloonsRunner.gamePhase = "lost";
+				BloonsRunner.phase = "postgame";
 			}
 		}
 		repaint();
@@ -100,9 +111,68 @@ public class BloonsWindow extends JPanel implements ActionListener, KeyListener,
 				g.setColor(Color.WHITE);
 				g.drawString("PLAYING...", (BloonsRunner.WIDTH - 100) + 5, (BloonsRunner.HEIGHT - 100) + 40);
 			}
+			
+			if (BloonsRunner.gamePhase == "game") {
+				for (int i = 0; i < BloonsRunner.currentBloons.length; i ++) {
+					if (BloonsRunner.currentBloons[i].getCoordinates() != null && BloonsRunner.currentBloons[i].getCoordinates() != new int[]{-1, -1}) {
+						g.setColor(BloonsRunner.currentBloons[i].getColor());
+						g.fillOval((BloonsRunner.currentBloons[i].getCoordinates()[0] * BloonsRunner.PATH_WIDTH) + 15, (BloonsRunner.currentBloons[i].getCoordinates()[1] * BloonsRunner.PATH_WIDTH) + 10, BloonsRunner.PATH_WIDTH - 30, BloonsRunner.PATH_WIDTH - 20);
+						g.fillOval((BloonsRunner.currentBloons[i].getCoordinates()[0] * BloonsRunner.PATH_WIDTH) + 22, (BloonsRunner.currentBloons[i].getCoordinates()[1] * BloonsRunner.PATH_WIDTH) + 37, 6, 6);
+					}
+				}
+			}
 		// ------------------ POSTGAME CANVAS CODE ------------------ \\
 		} else if (BloonsRunner.phase == "postgame") {
-			
+			if (BloonsRunner.gamePhase == "won") {
+				// Background
+				g.setColor(new Color(81, 253, 255));
+				g.fillRect(0, 0, BloonsRunner.WIDTH, BloonsRunner.HEIGHT);
+				
+				// Dirt
+				g.setColor(new Color(97, 72, 37));
+				g.fillRect(0, BloonsRunner.HEIGHT - 50, BloonsRunner.WIDTH, 50);
+				
+				// Grass
+				g.setColor(new Color(112, 215, 88));
+				g.fillRect(0, BloonsRunner.HEIGHT - 65, BloonsRunner.WIDTH, 15);
+				
+				// Text
+				g.setFont(new Font("Verdana", Font.BOLD, 120));
+				g.setColor(new Color(196, 13, 13));
+				g.drawString("YOU WON!", 180, 200);
+				
+				// Play Button
+					// Hover color
+				if (playButton.hover) g.setColor(new Color(234, 182, 0));
+				else g.setColor(new Color(249, 205, 54));
+					// Draw
+				g.fillRect(BloonsRunner.WIDTH / 2 - 100, BloonsRunner.HEIGHT / 2 + 60, 200, 60);
+					// Button text
+				g.setFont(new Font("Verdana", Font.PLAIN, 40));
+				g.setColor(Color.WHITE);
+				g.drawString("AGAIN?", BloonsRunner.WIDTH / 2 - 75, BloonsRunner.HEIGHT / 2 + 107);
+				
+			} else if (BloonsRunner.gamePhase == "lost") {
+				// Background
+				g.setColor(Color.BLACK);
+				g.fillRect(0, 0, BloonsRunner.WIDTH, BloonsRunner.HEIGHT);
+				
+				// Text
+				g.setFont(new Font("Verdana", Font.BOLD, 120));
+				g.setColor(Color.WHITE);
+				g.drawString("YOU LOST", 180, 200);
+				
+				// Play Button
+					// Hover color
+				if (playButton.hover) g.setColor(new Color(234, 182, 0));
+				else g.setColor(new Color(249, 205, 54));
+					// Draw
+				g.fillRect(BloonsRunner.WIDTH / 2 - 100, BloonsRunner.HEIGHT / 2 + 60, 200, 60);
+					// Button text
+				g.setFont(new Font("Verdana", Font.PLAIN, 40));
+				g.setColor(Color.WHITE);
+				g.drawString("AGAIN?", BloonsRunner.WIDTH / 2 - 75, BloonsRunner.HEIGHT / 2 + 107);
+			}
 		}
 	}
 
@@ -131,7 +201,7 @@ public class BloonsWindow extends JPanel implements ActionListener, KeyListener,
 		} else if (BloonsRunner.phase == "game") {
 			startRoundButton.hover = startRoundButton.checkCoordinates(x, y);
 		} else if (BloonsRunner.phase == "postgame") {
-			
+			playButton.hover = playButton.checkCoordinates(x, y);
 		}
 	}
 	
@@ -145,11 +215,54 @@ public class BloonsWindow extends JPanel implements ActionListener, KeyListener,
 				BloonsRunner.phase = "game";
 			}
 		} else if (BloonsRunner.phase == "game") {
-			if (startRoundButton.checkCoordinates(x, y)) {
-				startRound();
+			if (BloonsRunner.gamePhase == "pregame") {
+				if (startRoundButton.checkCoordinates(x, y)) {
+					startRound();
+				}
 			}
 		} else if (BloonsRunner.phase == "postgame") {
-			
+			if (playButton.checkCoordinates(x, y)) {
+				BloonsRunner.map = new SpringMap("Spring");
+				BloonsRunner.phase = "game";
+				BloonsRunner.gamePhase = "pregame";
+				BloonsRunner.round = 0;
+				BloonsRunner.currentBloons = null;
+				BloonsRunner.maps = new Bloon[][]{
+					// Round 1 -- 20 Red
+					{new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red")},
+					// Round 2 -- 30 Red
+					{new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red")},
+					// Round 3 -- 20 Red, 5 Blue
+					{new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue")},
+					// Round 4 -- 30 Red, 15 Blue
+					{new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue")},
+					// Round 5 -- 5 Red, 25 Blue
+					{new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue")},
+					// Round 6 -- 15 Red, 15 Blue, 4 Green
+					{new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green")},
+					// Round 7 -- 20 Red, 25 Blue, 5 Green
+					{new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green")},
+					// Round 8 -- 10 Red, 20 Blue, 14 Green
+					{new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green")},
+					// Round 9 -- 30 Green
+					{new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green")},
+					// Round 10 -- 102 Blue
+					{new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue")},
+					// Round 11 -- 10 Red, 10 Blue, 12 Green, 2 Yellow
+					{new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("yellow"), new Bloon("yellow")},
+					// Round 12 -- 15 Blue, 10 Green, 5 Yellow
+					{new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("yellow"), new Bloon("yellow"), new Bloon("yellow"), new Bloon("yellow"), new Bloon("yellow")},
+					// Round 13 -- 100 Red, 23 Green, 4 Yellow
+					{new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"),  new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("yellow"), new Bloon("yellow"), new Bloon("yellow"), new Bloon("yellow")},
+					// Round 14 -- 50 Red, 15 Blue, 10 Green, 9 Yellow
+					{new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"),  new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("blue"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("yellow"), new Bloon("yellow"), new Bloon("yellow"), new Bloon("yellow"), new Bloon("yellow"), new Bloon("yellow"), new Bloon("yellow"), new Bloon("yellow"), new Bloon("yellow")},
+					// Round 15 -- 20 Red, 12 Green, 5 Yellow, 3 Pink
+					{new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("yellow"), new Bloon("yellow"), new Bloon("yellow"), new Bloon("yellow"), new Bloon("yellow"), new Bloon("pink"), new Bloon("pink"), new Bloon("pink")}
+				};
+				BloonsRunner.lastRound = 0;
+				BloonsRunner.health = 50;
+				BloonsRunner.money = 0;
+			}
 		}
 	}
 
@@ -180,7 +293,18 @@ public class BloonsWindow extends JPanel implements ActionListener, KeyListener,
 	
 	public void endRound() {
 		BloonsRunner.lastRound ++;
+		BloonsRunner.money += BloonsRunner.round * 100;
 		BloonsRunner.gamePhase = "pregame";
-		startRound();
+		if (BloonsRunner.round == BloonsRunner.maps.length) {
+			BloonsRunner.gamePhase = "won";
+			BloonsRunner.phase = "postgame";
+		}
+	}
+	
+	public boolean checkIfAllBloonsDead() {
+		for (int i = 0; i < BloonsRunner.currentBloons.length; i ++) {
+			if (BloonsRunner.currentBloons[i].getCoordinates() == null || BloonsRunner.currentBloons[i].getCoordinates()[0] >= 0) return false;
+		}
+		return true;
 	}
 }

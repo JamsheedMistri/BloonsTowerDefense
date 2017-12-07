@@ -1,6 +1,3 @@
-import java.awt.Dimension;
-import java.util.ArrayList;
-
 import javax.swing.*;
 
 public class BloonsRunner {
@@ -15,6 +12,7 @@ public class BloonsRunner {
 	public static int health = 50;
 	public static int money = 0;
 	public static GameMap map;
+	
 	public static Bloon[][] maps = {
 		// Round 1 -- 20 Red
 		{new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red")},
@@ -47,9 +45,6 @@ public class BloonsRunner {
 		// Round 15 -- 20 Red, 12 Green, 5 Yellow, 3 Pink
 		{new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("red"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("green"), new Bloon("yellow"), new Bloon("yellow"), new Bloon("yellow"), new Bloon("yellow"), new Bloon("yellow"), new Bloon("pink"), new Bloon("pink"), new Bloon("pink")}
 	};
-	
-	// Hardcode bloons
-	
 	
 	public static void main(String[] args) {
 		JFrame f = new JFrame("Bloons Tower Defense");
