@@ -31,12 +31,12 @@ public class BloonsWindow extends JPanel implements ActionListener, KeyListener,
 					BloonsRunner.currentBloons[i + 1].initiate(BloonsRunner.map.getCoordinates());
 				}
 			}
-			if (checkIfAllBloonsDead()) {
-				endRound();
-			}
 			if (BloonsRunner.health == 0) {
 				BloonsRunner.gamePhase = "lost";
 				BloonsRunner.phase = "postgame";
+			}
+			if (checkIfAllBloonsDead()) {
+				endRound();
 			}
 		}
 		repaint();
