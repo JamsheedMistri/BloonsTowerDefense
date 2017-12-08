@@ -24,18 +24,17 @@ public class BloonsWindow extends JPanel implements ActionListener, KeyListener,
 	}
 	
 	public void actionPerformed(ActionEvent e) {
-		if (BloonsRunner.gamePhase == "game" && BloonsRunner.phase == "game") {
+		if (BloonsRunner.gamePhase.equals("game") && BloonsRunner.phase.equals("game")) {
 			for (int i = 0; i < BloonsRunner.currentBloons.length; i ++) {
 				BloonsRunner.currentBloons[i].move(BloonsRunner.map.getCoordinates());
 				if (BloonsRunner.currentBloons[i].needsToSummonNextBloon.equals("true") && i + 1 != BloonsRunner.currentBloons.length) {
 					BloonsRunner.currentBloons[i + 1].initiate(BloonsRunner.map.getCoordinates());
 				}
 			}
-			if (BloonsRunner.health == 0) {
+			if (BloonsRunner.health <= 0) {
 				BloonsRunner.gamePhase = "lost";
 				BloonsRunner.phase = "postgame";
-			}
-			if (checkIfAllBloonsDead()) {
+			} else if (checkIfAllBloonsDead()) {
 				endRound();
 			}
 		}
@@ -46,7 +45,7 @@ public class BloonsWindow extends JPanel implements ActionListener, KeyListener,
 		super.paintComponent(g);
 		
 		// ------------------ PREGAME CANVAS CODE ------------------ \\
-		if (BloonsRunner.phase == "pregame") {
+		if (BloonsRunner.phase.equals("pregame")) {
 			// Background
 			g.setColor(new Color(81, 253, 255));
 			g.fillRect(0, 0, BloonsRunner.WIDTH, BloonsRunner.HEIGHT);
@@ -83,7 +82,7 @@ public class BloonsWindow extends JPanel implements ActionListener, KeyListener,
 			g.setColor(Color.WHITE);
 			g.drawString("PLAY", BloonsRunner.WIDTH / 2 - 60, BloonsRunner.HEIGHT / 2 + 107);
 		// ------------------ GAME CANVAS CODE ------------------ \\
-		} else if (BloonsRunner.phase == "game") {
+		} else if (BloonsRunner.phase.equals("game")) {
 			for (int row = 0; row < BloonsRunner.HEIGHT / BloonsRunner.PATH_WIDTH; row ++) {
 				for (int col = 0; col < BloonsRunner.WIDTH / BloonsRunner.PATH_WIDTH; col ++) {
 					BloonsRunner.map.getPath()[row][col].draw(g, col * BloonsRunner.PATH_WIDTH, row * BloonsRunner.PATH_WIDTH);
@@ -97,22 +96,22 @@ public class BloonsWindow extends JPanel implements ActionListener, KeyListener,
 			g.drawString("Health: " + BloonsRunner.health, 210, (BloonsRunner.HEIGHT - 100) + 25);
 			g.drawString("Money: " + BloonsRunner.money, 410, (BloonsRunner.HEIGHT - 100) + 25);
 			
-			if (startRoundButton.hover && BloonsRunner.gamePhase == "pregame") {
+			if (startRoundButton.hover && BloonsRunner.gamePhase.equals("pregame")) {
 				g.setColor(new Color(22, 195, 221));
 				g.fillRect(BloonsRunner.WIDTH - 100, BloonsRunner.HEIGHT - 100, 100, 100);
 			}
 			
-			if (BloonsRunner.gamePhase == "pregame") {
+			if (BloonsRunner.gamePhase.equals("pregame")) {
 				g.setFont(new Font("Verdana", Font.BOLD, 15));
 				g.setColor(Color.WHITE);
 				g.drawString("START", (BloonsRunner.WIDTH - 100) + 20, (BloonsRunner.HEIGHT - 100) + 40);
-			} else if (BloonsRunner.gamePhase == "game") {
+			} else if (BloonsRunner.gamePhase.equals("game")) {
 				g.setFont(new Font("Verdana", Font.BOLD, 14));
 				g.setColor(Color.WHITE);
 				g.drawString("PLAYING...", (BloonsRunner.WIDTH - 100) + 5, (BloonsRunner.HEIGHT - 100) + 40);
 			}
 			
-			if (BloonsRunner.gamePhase == "game") {
+			if (BloonsRunner.gamePhase.equals("game")) {
 				for (int i = 0; i < BloonsRunner.currentBloons.length; i ++) {
 					if (BloonsRunner.currentBloons[i].getCoordinates() != null && BloonsRunner.currentBloons[i].getCoordinates() != new int[]{-1, -1}) {
 						g.setColor(BloonsRunner.currentBloons[i].getColor());
@@ -122,8 +121,8 @@ public class BloonsWindow extends JPanel implements ActionListener, KeyListener,
 				}
 			}
 		// ------------------ POSTGAME CANVAS CODE ------------------ \\
-		} else if (BloonsRunner.phase == "postgame") {
-			if (BloonsRunner.gamePhase == "won") {
+		} else if (BloonsRunner.phase.equals("postgame")) {
+			if (BloonsRunner.gamePhase.equals("won")) {
 				// Background
 				g.setColor(new Color(81, 253, 255));
 				g.fillRect(0, 0, BloonsRunner.WIDTH, BloonsRunner.HEIGHT);
@@ -152,7 +151,7 @@ public class BloonsWindow extends JPanel implements ActionListener, KeyListener,
 				g.setColor(Color.WHITE);
 				g.drawString("AGAIN?", BloonsRunner.WIDTH / 2 - 75, BloonsRunner.HEIGHT / 2 + 107);
 				
-			} else if (BloonsRunner.gamePhase == "lost") {
+			} else if (BloonsRunner.gamePhase.equals("lost")) {
 				// Background
 				g.setColor(Color.BLACK);
 				g.fillRect(0, 0, BloonsRunner.WIDTH, BloonsRunner.HEIGHT);
@@ -196,11 +195,11 @@ public class BloonsWindow extends JPanel implements ActionListener, KeyListener,
 		int x = e.getPoint().x;
 		int y = e.getPoint().y;
 		
-		if (BloonsRunner.phase == "pregame") {
+		if (BloonsRunner.phase.equals("pregame")) {
 			playButton.hover = playButton.checkCoordinates(x, y);
-		} else if (BloonsRunner.phase == "game") {
+		} else if (BloonsRunner.phase.equals("game")) {
 			startRoundButton.hover = startRoundButton.checkCoordinates(x, y);
-		} else if (BloonsRunner.phase == "postgame") {
+		} else if (BloonsRunner.phase.equals("postgame")) {
 			playButton.hover = playButton.checkCoordinates(x, y);
 		}
 	}
@@ -209,20 +208,20 @@ public class BloonsWindow extends JPanel implements ActionListener, KeyListener,
 		int x = e.getPoint().x;
 		int y = e.getPoint().y;
 		
-		if (BloonsRunner.phase == "pregame") {
+		if (BloonsRunner.phase.equals("pregame")) {
 			if (playButton.checkCoordinates(x, y)) {
-				BloonsRunner.map = new SpringMap("Spring");
+//				BloonsRunner.map = new SpringMap("Spring");
+				BloonsRunner.map = new CornMap("Corn");
 				BloonsRunner.phase = "game";
 			}
-		} else if (BloonsRunner.phase == "game") {
-			if (BloonsRunner.gamePhase == "pregame") {
+		} else if (BloonsRunner.phase.equals("game")) {
+			if (BloonsRunner.gamePhase.equals("pregame")) {
 				if (startRoundButton.checkCoordinates(x, y)) {
 					startRound();
 				}
 			}
-		} else if (BloonsRunner.phase == "postgame") {
+		} else if (BloonsRunner.phase.equals("postgame")) {
 			if (playButton.checkCoordinates(x, y)) {
-				BloonsRunner.map = new SpringMap("Spring");
 				BloonsRunner.phase = "game";
 				BloonsRunner.gamePhase = "pregame";
 				BloonsRunner.round = 0;

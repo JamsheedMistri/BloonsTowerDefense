@@ -75,7 +75,7 @@ public class Bloon {
 	public void move(int[][] coordinatesParam) {
 		if (coordinates == null) return;
 		
-		currentDelay += BloonsWindow.FPSDelay;
+		currentDelay += BloonsWindow.FPSDelay*10;
 		if (currentDelay >= getSpeed()) {
 			currentDelay = 0;
 			
