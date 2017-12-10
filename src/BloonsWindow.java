@@ -1,5 +1,7 @@
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
+
 import javax.swing.*;
 
 public class BloonsWindow extends JPanel implements ActionListener, KeyListener, MouseListener, MouseMotionListener {
@@ -9,8 +11,8 @@ public class BloonsWindow extends JPanel implements ActionListener, KeyListener,
 	Timer t = new Timer(FPSDelay, this);
 	
 	int mouseX = 0, mouseY = 0;
-	
 	String isSelectingMonkey = "no";
+	String tip = "";
 	
 	// Pregame buttons
 	GameButton playButton = new GameButton(BloonsRunner.WIDTH / 2 - 100, BloonsRunner.HEIGHT / 2 + 60, 200, 60);
@@ -27,18 +29,33 @@ public class BloonsWindow extends JPanel implements ActionListener, KeyListener,
 	}
 	
 	public void actionPerformed(ActionEvent e) {
-		if (BloonsRunner.gamePhase.equals("game") && BloonsRunner.phase.equals("game")) {
-			for (int i = 0; i < BloonsRunner.currentBloons.length; i ++) {
-				BloonsRunner.currentBloons[i].move(BloonsRunner.map.getCoordinates());
-				if (BloonsRunner.currentBloons[i].needsToSummonNextBloon.equals("true") && i + 1 != BloonsRunner.currentBloons.length) {
-					BloonsRunner.currentBloons[i + 1].initiate(BloonsRunner.map.getCoordinates());
+		if (BloonsRunner.phase.equals("game")) {
+			if (BloonsRunner.gamePhase.equals("game")) {
+				for (int i = 0; i < BloonsRunner.currentBloons.length; i ++) {
+					BloonsRunner.currentBloons[i].move(BloonsRunner.map.getCoordinates());
+					if (BloonsRunner.currentBloons[i].needsToSummonNextBloon.equals("true") && i + 1 != BloonsRunner.currentBloons.length) {
+						BloonsRunner.currentBloons[i + 1].initiate(BloonsRunner.map.getCoordinates());
+					}
+				}
+				
+				if (BloonsRunner.health <= 0) {
+					BloonsRunner.gamePhase = "lost";
+					BloonsRunner.phase = "postgame";
+				} else if (checkIfAllBloonsDead()) {
+					endRound();
 				}
 			}
-			if (BloonsRunner.health <= 0) {
-				BloonsRunner.gamePhase = "lost";
-				BloonsRunner.phase = "postgame";
-			} else if (checkIfAllBloonsDead()) {
-				endRound();
+			
+			if (!isSelectingMonkey.equals("no")) {
+				tip = "Hit Escape [ESC] to cancel selecting.";
+			} else if (BloonsRunner.round == 0) {
+				if (BloonsRunner.money > 0) {
+					tip = "You currently have $" + BloonsRunner.money + ". Either buy something from the shop or hit play on the bottom right!";
+				} else {
+					tip = "Hit play on the bottom right to start the round!";
+				}
+			} else {
+				tip = "";
 			}
 		}
 		repaint();
@@ -97,7 +114,11 @@ public class BloonsWindow extends JPanel implements ActionListener, KeyListener,
 			g.setColor(Color.BLACK);
 			g.drawString("Round: " + BloonsRunner.round, 10, (BloonsRunner.HEIGHT - 100) + 25);
 			g.drawString("Health: " + BloonsRunner.health, 210, (BloonsRunner.HEIGHT - 100) + 25);
-			g.drawString("Money: " + BloonsRunner.money, 410, (BloonsRunner.HEIGHT - 100) + 25);
+			g.drawString("Money: $" + BloonsRunner.money, 410, (BloonsRunner.HEIGHT - 100) + 25);
+			if (!tip.equals("")) {
+				g.setFont(new Font("Verdana", Font.BOLD, 15));
+				g.drawString("[TIP] " + tip, 10, (BloonsRunner.HEIGHT - 70) + 25);
+			}
 			
 			if (startRoundButton.hover && BloonsRunner.gamePhase.equals("pregame") && isSelectingMonkey == "no") {
 				g.setColor(new Color(22, 195, 221));
@@ -129,7 +150,7 @@ public class BloonsWindow extends JPanel implements ActionListener, KeyListener,
 			g.setColor(Color.WHITE);
 			g.drawString("$" + MonkeySprite.price, (BloonsRunner.WIDTH - 50) + 5, 25);
 			
-			if (isSelectingMonkey != "no") {
+			if (isSelectingMonkey != "no" && MonkeySprite.price <= BloonsRunner.money) {
 				if (isSelectingMonkey.equals("MonkeySprite")) {
 					if (checkIfMouseIsOnPath()) g.setColor(new Color(255, 0, 0, 100));
 					else g.setColor(new Color(0, 0, 0, 100));
@@ -146,7 +167,7 @@ public class BloonsWindow extends JPanel implements ActionListener, KeyListener,
 			if (BloonsRunner.money < MonkeySprite.price) {
 				g.setColor(new Color(0, 0, 0, 150));
 				g.fillRect(BloonsRunner.WIDTH - 100, 0, 50, 50);
-			} else if (monkeySpriteButton.hover) {
+			} else if (monkeySpriteButton.hover && isSelectingMonkey == "no") {
 				g.setColor(new Color(255, 255, 255, 100));
 				g.fillRect(BloonsRunner.WIDTH - 100, 0, 50, 50);
 			}
@@ -221,6 +242,12 @@ public class BloonsWindow extends JPanel implements ActionListener, KeyListener,
 
 	public void keyPressed(KeyEvent e) {
 		int code = e.getKeyCode();
+		if (BloonsRunner.phase.equals("game")) {
+			if (code == 27 && !isSelectingMonkey.equals("no")) {
+				isSelectingMonkey = "no";
+			}
+		}
+		
 	}
 
 	public void keyReleased(KeyEvent e) {
@@ -261,13 +288,12 @@ public class BloonsWindow extends JPanel implements ActionListener, KeyListener,
 				
 			}
 			
-			if (isSelectingMonkey.equals("no")) {
+			if (isSelectingMonkey.equals("no") && MonkeySprite.price <= BloonsRunner.money) {
 				if (monkeySpriteButton.checkCoordinates(mouseX, mouseY)) {
 					isSelectingMonkey = "MonkeySprite";
 				}
 			} else {
-				if (!checkIfMouseIsOnPath()) {
-					//TODO CHECK IF THEY ARE PLACING ON DIRTPATH
+				if (!checkIfMouseIsOnPath() && MonkeySprite.price <= BloonsRunner.money) {
 					MonkeySprite.monkeys.add(new MonkeySprite(mouseX - (BloonsRunner.PATH_WIDTH / 2), mouseY - (BloonsRunner.PATH_WIDTH / 2)));
 					BloonsRunner.money -= MonkeySprite.price;
 					isSelectingMonkey = "no";
@@ -313,7 +339,9 @@ public class BloonsWindow extends JPanel implements ActionListener, KeyListener,
 				};
 				BloonsRunner.lastRound = 0;
 				BloonsRunner.health = 50;
-				BloonsRunner.money = 0;
+				BloonsRunner.money = 100;
+				isSelectingMonkey = "no";
+				MonkeySprite.monkeys = new ArrayList<MonkeySprite>();
 			}
 		}
 	}
