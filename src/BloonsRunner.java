@@ -10,7 +10,7 @@ public class BloonsRunner {
 	public static Bloon[] currentBloons;
 	public static int lastRound = 0;
 	public static int health = 50;
-	public static int money = 0;
+	public static int money = 100;
 	public static GameMap map;
 	
 	public static Bloon[][] maps = {

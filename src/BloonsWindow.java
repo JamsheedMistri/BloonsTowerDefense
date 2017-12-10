@@ -1,7 +1,5 @@
 import java.awt.*;
 import java.awt.event.*;
-import java.util.Arrays;
-
 import javax.swing.*;
 
 public class BloonsWindow extends JPanel implements ActionListener, KeyListener, MouseListener, MouseMotionListener {
@@ -10,9 +8,14 @@ public class BloonsWindow extends JPanel implements ActionListener, KeyListener,
 	
 	Timer t = new Timer(FPSDelay, this);
 	
+	int mouseX = 0, mouseY = 0;
+	
+	String isSelectingMonkey = "no";
+	
 	// Pregame buttons
 	GameButton playButton = new GameButton(BloonsRunner.WIDTH / 2 - 100, BloonsRunner.HEIGHT / 2 + 60, 200, 60);
 	GameButton startRoundButton = new GameButton(BloonsRunner.WIDTH - 100, BloonsRunner.HEIGHT - 100, 100, 100);
+	GameButton monkeySpriteButton = new GameButton(BloonsRunner.WIDTH - 100, 0, 50, 50);
 	
 	public BloonsWindow() {
 		t.start();
@@ -96,7 +99,7 @@ public class BloonsWindow extends JPanel implements ActionListener, KeyListener,
 			g.drawString("Health: " + BloonsRunner.health, 210, (BloonsRunner.HEIGHT - 100) + 25);
 			g.drawString("Money: " + BloonsRunner.money, 410, (BloonsRunner.HEIGHT - 100) + 25);
 			
-			if (startRoundButton.hover && BloonsRunner.gamePhase.equals("pregame")) {
+			if (startRoundButton.hover && BloonsRunner.gamePhase.equals("pregame") && isSelectingMonkey == "no") {
 				g.setColor(new Color(22, 195, 221));
 				g.fillRect(BloonsRunner.WIDTH - 100, BloonsRunner.HEIGHT - 100, 100, 100);
 			}
@@ -120,7 +123,44 @@ public class BloonsWindow extends JPanel implements ActionListener, KeyListener,
 					}
 				}
 			}
-		// ------------------ POSTGAME CANVAS CODE ------------------ \\
+			
+			MonkeySprite.drawPreview(g, BloonsRunner.WIDTH - (BloonsRunner.PATH_WIDTH * 2), 0);
+			g.setFont(new Font("Verdana", Font.BOLD, 10));
+			g.setColor(Color.WHITE);
+			g.drawString("$" + MonkeySprite.price, (BloonsRunner.WIDTH - 50) + 5, 25);
+			
+			if (isSelectingMonkey != "no") {
+				if (isSelectingMonkey.equals("MonkeySprite")) {
+					if (checkIfMouseIsOnPath()) g.setColor(new Color(255, 0, 0, 100));
+					else g.setColor(new Color(0, 0, 0, 100));
+					
+					g.fillOval(mouseX - MonkeySprite.radius, mouseY - MonkeySprite.radius, MonkeySprite.radius * 2, MonkeySprite.radius * 2);
+					MonkeySprite.drawPreview(g, mouseX - (BloonsRunner.PATH_WIDTH / 2), mouseY - (BloonsRunner.PATH_WIDTH / 2));
+				}
+			}
+			
+			for (MonkeySprite m : MonkeySprite.monkeys) {
+				m.draw(g);
+			}
+			
+			if (BloonsRunner.money < MonkeySprite.price) {
+				g.setColor(new Color(0, 0, 0, 150));
+				g.fillRect(BloonsRunner.WIDTH - 100, 0, 50, 50);
+			} else if (monkeySpriteButton.hover) {
+				g.setColor(new Color(255, 255, 255, 100));
+				g.fillRect(BloonsRunner.WIDTH - 100, 0, 50, 50);
+			}
+			
+			NinjaSprite.drawPreview(g, BloonsRunner.WIDTH - (BloonsRunner.PATH_WIDTH * 2), BloonsRunner.PATH_WIDTH);
+			g.setFont(new Font("Verdana", Font.BOLD, 10));
+			g.setColor(Color.WHITE);
+			g.drawString("$" + NinjaSprite.price, (BloonsRunner.WIDTH - 50) + 5, BloonsRunner.PATH_WIDTH + 25);
+			
+			SuperMonkeySprite.drawPreview(g, BloonsRunner.WIDTH - (BloonsRunner.PATH_WIDTH * 2), BloonsRunner.PATH_WIDTH * 2);
+			g.setFont(new Font("Verdana", Font.BOLD, 10));
+			g.setColor(Color.WHITE);
+			g.drawString("$" + SuperMonkeySprite.price, (BloonsRunner.WIDTH - 50) + 5, (BloonsRunner.PATH_WIDTH * 2) + 25);
+			// ------------------ POSTGAME CANVAS CODE ------------------ \\
 		} else if (BloonsRunner.phase.equals("postgame")) {
 			if (BloonsRunner.gamePhase.equals("won")) {
 				// Background
@@ -192,36 +232,49 @@ public class BloonsWindow extends JPanel implements ActionListener, KeyListener,
 	}
 
 	public void mouseMoved(MouseEvent e) {
-		int x = e.getPoint().x;
-		int y = e.getPoint().y;
+		mouseX = e.getPoint().x;
+		mouseY = e.getPoint().y;
 		
 		if (BloonsRunner.phase.equals("pregame")) {
-			playButton.hover = playButton.checkCoordinates(x, y);
+			playButton.hover = playButton.checkCoordinates(mouseX, mouseY);
 		} else if (BloonsRunner.phase.equals("game")) {
-			startRoundButton.hover = startRoundButton.checkCoordinates(x, y);
+			startRoundButton.hover = startRoundButton.checkCoordinates(mouseX, mouseY);
+			monkeySpriteButton.hover = monkeySpriteButton.checkCoordinates(mouseX, mouseY);
 		} else if (BloonsRunner.phase.equals("postgame")) {
-			playButton.hover = playButton.checkCoordinates(x, y);
+			playButton.hover = playButton.checkCoordinates(mouseX, mouseY);
 		}
 	}
 	
 	public void mouseClicked(MouseEvent e) {
-		int x = e.getPoint().x;
-		int y = e.getPoint().y;
-		
 		if (BloonsRunner.phase.equals("pregame")) {
-			if (playButton.checkCoordinates(x, y)) {
+			if (playButton.checkCoordinates(mouseX, mouseY)) {
 //				BloonsRunner.map = new SpringMap("Spring");
 				BloonsRunner.map = new CornMap("Corn");
 				BloonsRunner.phase = "game";
 			}
 		} else if (BloonsRunner.phase.equals("game")) {
 			if (BloonsRunner.gamePhase.equals("pregame")) {
-				if (startRoundButton.checkCoordinates(x, y)) {
+				if (startRoundButton.checkCoordinates(mouseX, mouseY) && isSelectingMonkey == "no") {
 					startRound();
+				}
+			} else if (BloonsRunner.gamePhase.equals("game")) {
+				
+			}
+			
+			if (isSelectingMonkey.equals("no")) {
+				if (monkeySpriteButton.checkCoordinates(mouseX, mouseY)) {
+					isSelectingMonkey = "MonkeySprite";
+				}
+			} else {
+				if (!checkIfMouseIsOnPath()) {
+					//TODO CHECK IF THEY ARE PLACING ON DIRTPATH
+					MonkeySprite.monkeys.add(new MonkeySprite(mouseX - (BloonsRunner.PATH_WIDTH / 2), mouseY - (BloonsRunner.PATH_WIDTH / 2)));
+					BloonsRunner.money -= MonkeySprite.price;
+					isSelectingMonkey = "no";
 				}
 			}
 		} else if (BloonsRunner.phase.equals("postgame")) {
-			if (playButton.checkCoordinates(x, y)) {
+			if (playButton.checkCoordinates(mouseX, mouseY)) {
 				BloonsRunner.phase = "game";
 				BloonsRunner.gamePhase = "pregame";
 				BloonsRunner.round = 0;
@@ -305,5 +358,14 @@ public class BloonsWindow extends JPanel implements ActionListener, KeyListener,
 			if (BloonsRunner.currentBloons[i].getCoordinates() == null || BloonsRunner.currentBloons[i].getCoordinates()[0] >= 0) return false;
 		}
 		return true;
+	}
+	
+	public boolean checkIfMouseIsOnPath() {
+		if (mouseX > BloonsRunner.WIDTH - 100 || mouseY > BloonsRunner.HEIGHT - 100) return true;
+		for (int i = 0; i < BloonsRunner.map.getCoordinates().length; i ++) {
+			int[] mouseCoords = new int[]{(int)(mouseX / BloonsRunner.PATH_WIDTH),(int)(mouseY / BloonsRunner.PATH_WIDTH)};
+			if (BloonsRunner.map.getCoordinates()[i][0] == mouseCoords[0] && BloonsRunner.map.getCoordinates()[i][1] == mouseCoords[1]) return true;
+		}
+		return false;
 	}
 }
