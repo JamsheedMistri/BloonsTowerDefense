@@ -1,8 +1,11 @@
 import java.awt.Color;
 import java.awt.Graphics;
+import java.util.ArrayList;
 
 public class SuperMonkeySprite extends Sprite {
 	public static final int price = 4000;
+	public static final int radius = 125;
+	public static ArrayList<SuperMonkeySprite> monkeys = new ArrayList<SuperMonkeySprite>();
 
 	public SuperMonkeySprite(int x, int y) {
 		super(x, y);

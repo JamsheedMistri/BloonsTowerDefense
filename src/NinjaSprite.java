@@ -1,8 +1,11 @@
 import java.awt.Color;
 import java.awt.Graphics;
+import java.util.ArrayList;
 
 public class NinjaSprite extends Sprite {
 	public static final int price = 250;
+	public static final int radius = 100;
+	public static ArrayList<NinjaSprite> monkeys = new ArrayList<NinjaSprite>();
 
 	public NinjaSprite(int x, int y) {
 		super(x, y);
