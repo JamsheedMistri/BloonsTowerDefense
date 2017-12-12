@@ -4,7 +4,7 @@ import java.awt.Graphics;
 public class TreeTile extends Tile {
 
 	public int getType() {
-		return Tile.SCENERY;
+		return Tile.SPRITE_PATH;
 	}
 	
 	public void draw(Graphics g, int x, int y) {

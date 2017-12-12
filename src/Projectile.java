@@ -1,5 +1,6 @@
+import java.awt.Graphics;
 
-public class Projectile {
+public abstract class Projectile {
 	int x, y, xTarget, yTarget;
 	double xVelocity, yVelocity;
 	
@@ -16,20 +17,6 @@ public class Projectile {
 		this.yVelocity = velocity * yDistance / distance;
 	}
 	
-	public void move() {
-		x += xVelocity;
-		y += yVelocity;
-	}
-	
-	public boolean reachedTarget() {
-		if (xVelocity < 0) {
-			if (x < xTarget) return false;
-		} else if (x > xTarget) return false;
-		
-		if (yVelocity < 0) {
-			if (y < yTarget) return false;
-		} else if (y > yTarget) return false;
-		
-		return true;
-	}
+	public abstract void move();
+	public abstract void draw(Graphics g);
 }

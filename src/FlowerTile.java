@@ -1,7 +1,7 @@
 import java.awt.Color;
 import java.awt.Graphics;
 
-public class CornTile extends Tile {
+public class FlowerTile extends Tile {
 
 	public int getType() {
 		return Tile.SPRITE_PATH;
@@ -12,9 +12,13 @@ public class CornTile extends Tile {
 		g.fillRect(x, y, BloonsRunner.PATH_WIDTH, BloonsRunner.PATH_WIDTH);
 		g.setColor(Color.YELLOW);
 		g.fillOval(x + 5, y + 5, 5, 5);
+		g.setColor(Color.ORANGE);
 		g.fillOval(x + 15, y + 13, 5, 5);
-		g.fillOval(x + 25, y + 43, 5, 5);
-		g.fillOval(x + 35, y + 23, 5, 5);
-		g.fillOval(x + 42, y + 35, 5, 5);
+		g.setColor(Color.RED);
+		g.fillOval(x + 42, y + 43, 5, 5);
+		g.setColor(Color.CYAN);
+		g.fillOval(x + 34, y + 23, 5, 5);
+		g.setColor(Color.GREEN);
+		g.fillOval(x + 21, y + 35, 5, 5);
 	}
 }

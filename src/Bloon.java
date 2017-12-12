@@ -1,8 +1,6 @@
 import java.awt.Color;
-import java.awt.Graphics;
 
 public class Bloon {
-	public String type;
 	private int[] coordinates;
 	public int layers;
 	public int currentDelay;
@@ -19,7 +17,6 @@ public class Bloon {
 	// Lead: 9 layers, speed 1500
 	
 	public Bloon(String s) {
-		type = s;
 		if (s.equals("red")) layers = 1;
 		if (s.equals("blue")) layers = 2;
 		if (s.equals("green")) layers = 3;
@@ -32,29 +29,29 @@ public class Bloon {
 	}
 	
 	public Color getColor() {
-		switch (type) {
-			case ("red"): return Color.RED;
-			case ("blue"): return Color.BLUE;
-			case ("green"): return Color.GREEN;
-			case ("yellow"): return Color.YELLOW;
-			case ("pink"): return Color.PINK;
-			case ("cyan"): return Color.CYAN;
-			case ("black"): return Color.BLACK;
-			case ("clay"): return new Color(224, 155, 76);
-			case ("lead"): return Color.GRAY;
+		switch (layers) {
+			case (1): return Color.RED;
+			case (2): return Color.BLUE;
+			case (3): return Color.GREEN;
+			case (4): return Color.YELLOW;
+			case (5): return Color.PINK;
+			case (6): return Color.CYAN;
+			case (7): return Color.BLACK;
+			case (8): return new Color(224, 155, 76);
+			case (9): return Color.GRAY;
 			default: return null;
 		}
 	}
 	
 	public int getSpeed() {
 		switch (layers) {
-			case (1): return 1000;
-			case (2): return 900;
-			case (3): return 800;
-			case (4): return 700;
-			case (5): return 600;
-			case (6): return 500;
-			case (7): return 400;
+			case (1): return 750;
+			case (2): return 650;
+			case (3): return 550;
+			case (4): return 450;
+			case (5): return 350;
+			case (6): return 250;
+			case (7): return 150;
 			case (8): return 1000;
 			case (9): return 1500;
 			default: return -1;
@@ -75,7 +72,7 @@ public class Bloon {
 	public void move(int[][] coordinatesParam) {
 		if (coordinates == null) return;
 		
-		currentDelay += BloonsWindow.FPSDelay*10;
+		currentDelay += BloonsWindow.FPSDelay;
 		if (currentDelay >= getSpeed()) {
 			currentDelay = 0;
 			
