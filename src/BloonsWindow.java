@@ -149,19 +149,19 @@ public class BloonsWindow extends JPanel implements ActionListener, KeyListener,
 
 			if (!isSelectingMonkey.equals("no")) {
 				if (isSelectingMonkey.equals("MonkeySprite")) {
-					if (checkIfMouseIsOnPath()) g.setColor(new Color(255, 0, 0, 100));
+					if (checkIfCanPlaceMonkey()) g.setColor(new Color(255, 0, 0, 100));
 					else g.setColor(new Color(0, 0, 0, 100));
 
 					g.fillOval(mouseX - MonkeySprite.radius, mouseY - MonkeySprite.radius, MonkeySprite.radius * 2, MonkeySprite.radius * 2);
 					MonkeySprite.drawPreview(g, mouseX - (BloonsRunner.PATH_WIDTH / 2), mouseY - (BloonsRunner.PATH_WIDTH / 2));
 				} else if (isSelectingMonkey.equals("NinjaSprite")) {
-					if (checkIfMouseIsOnPath()) g.setColor(new Color(255, 0, 0, 100));
+					if (checkIfCanPlaceMonkey()) g.setColor(new Color(255, 0, 0, 100));
 					else g.setColor(new Color(0, 0, 0, 100));
 
 					g.fillOval(mouseX - NinjaSprite.radius, mouseY - NinjaSprite.radius, NinjaSprite.radius * 2, NinjaSprite.radius * 2);
 					NinjaSprite.drawPreview(g, mouseX - (BloonsRunner.PATH_WIDTH / 2), mouseY - (BloonsRunner.PATH_WIDTH / 2));
 				} else if (isSelectingMonkey.equals("SuperMonkeySprite")) {
-					if (checkIfMouseIsOnPath()) g.setColor(new Color(255, 0, 0, 100));
+					if (checkIfCanPlaceMonkey()) g.setColor(new Color(255, 0, 0, 100));
 					else g.setColor(new Color(0, 0, 0, 100));
 
 					g.fillOval(mouseX - SuperMonkeySprite.radius, mouseY - SuperMonkeySprite.radius, SuperMonkeySprite.radius * 2, SuperMonkeySprite.radius * 2);
@@ -348,7 +348,7 @@ public class BloonsWindow extends JPanel implements ActionListener, KeyListener,
 					isSelectingMonkey = "SuperMonkeySprite";
 				}
 			} else {
-				if (!checkIfMouseIsOnPath()) {
+				if (!checkIfCanPlaceMonkey()) {
 					if (isSelectingMonkey.equals("MonkeySprite")) {
 						MonkeySprite.monkeys.add(new MonkeySprite(mouseX - (BloonsRunner.PATH_WIDTH / 2), mouseY - (BloonsRunner.PATH_WIDTH / 2)));
 						BloonsRunner.money -= MonkeySprite.price;
@@ -422,12 +422,25 @@ public class BloonsWindow extends JPanel implements ActionListener, KeyListener,
 		return true;
 	}
 
-	public boolean checkIfMouseIsOnPath() {
+	public boolean checkIfCanPlaceMonkey() {
 		if (mouseX > BloonsRunner.WIDTH - 100 || mouseY > BloonsRunner.HEIGHT - 100) return true;
 		for (int i = 0; i < BloonsRunner.map.getCoordinates().length; i ++) {
 			int[] mouseCoords = new int[]{(int)(mouseX / BloonsRunner.PATH_WIDTH),(int)(mouseY / BloonsRunner.PATH_WIDTH)};
 			if (BloonsRunner.map.getCoordinates()[i][0] == mouseCoords[0] && BloonsRunner.map.getCoordinates()[i][1] == mouseCoords[1]) return true;
 		}
+		
+		for (MonkeySprite m : MonkeySprite.monkeys) {
+			if ((mouseX > m.x && mouseX < m.x + BloonsRunner.PATH_WIDTH) && (mouseY > m.y && mouseY < m.y + BloonsRunner.PATH_WIDTH)) return true;
+		}
+
+		for (NinjaSprite m : NinjaSprite.monkeys) {
+			if ((mouseX > m.x && mouseX < m.x + BloonsRunner.PATH_WIDTH) && (mouseY > m.y && mouseY < m.y + BloonsRunner.PATH_WIDTH)) return true;
+		}
+
+		for (SuperMonkeySprite m : SuperMonkeySprite.monkeys) {
+			if ((mouseX > m.x && mouseX < m.x + BloonsRunner.PATH_WIDTH) && (mouseY > m.y && mouseY < m.y + BloonsRunner.PATH_WIDTH)) return true;
+		}
+		
 		return false;
 	}
 }
