@@ -15,6 +15,7 @@ public class BloonsRunner {
 
 	public static Bloon[][] maps = getBloonTracks();
 
+	// The custom coded bloon layout
 	public static Bloon[][] getBloonTracks() {
 		return new Bloon[][]{
 			// Round 1 -- 20 Red
