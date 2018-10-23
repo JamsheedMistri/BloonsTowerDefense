@@ -1,5 +1,5 @@
 # BloonsTowerDefense
-Bloons Tower Defense in Java
+Bloons Tower Defense in Java.
 
 View latest release [here](https://github.com/MistriHD/BloonsTowerDefense/releases/tag/v1.0). Download [here](https://github.com/MistriHD/BloonsTowerDefense/blob/master/BloonsTowerDefense.jar?raw=true).
 
