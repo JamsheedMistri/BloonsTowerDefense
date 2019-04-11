@@ -5,4 +5,4 @@ View latest release [here](https://github.com/MistriHD/BloonsTowerDefense/releas
 
 Instructions provided in-game. Screenshots:
 ![title](https://i.imgur.com/oFqMW4z.png)
-![game](https://i.imgur.com/BvGSoDw.png)
+![game](https://i.imgur.com/BvGSoDw.png) 
