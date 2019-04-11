@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="BloonsTowerDefense:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/BloonsTowerDefense_jar</output-path>
+    <root id="archive" name="BloonsTowerDefense.jar">
+      <element id="module-output" name="BloonsTowerDefense" />
+    </root>
+  </artifact>
+</component>
