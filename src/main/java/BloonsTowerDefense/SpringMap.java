@@ -1,4 +1,4 @@
-package edu.oregonstate.pongbros;
+package BloonsTowerDefense;
 
 public class SpringMap extends GameMap {
 	String name;

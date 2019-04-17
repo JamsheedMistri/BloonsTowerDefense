@@ -1,4 +1,4 @@
-package edu.oregonstate.pongbros;
+package BloonsTowerDefense;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -256,19 +256,19 @@ public class BloonsWindow extends JPanel implements ActionListener, KeyListener,
 
 			// Draw monkey if you're selecting it
 			if (!isSelectingMonkey.equals("no")) {
-				if (isSelectingMonkey.equals("edu.oregonstate.pongbros.MonkeySprite")) {
+				if (isSelectingMonkey.equals("MonkeySprite")) {
 					if (checkIfCanPlaceMonkey()) g.setColor(new Color(255, 0, 0, 100));
 					else g.setColor(new Color(0, 0, 0, 100));
 
 					g.fillOval(mouseX - MonkeySprite.radius, mouseY - MonkeySprite.radius, MonkeySprite.radius * 2, MonkeySprite.radius * 2);
 					MonkeySprite.drawPreview(g, mouseX - (BloonsRunner.PATH_WIDTH / 2), mouseY - (BloonsRunner.PATH_WIDTH / 2));
-				} else if (isSelectingMonkey.equals("edu.oregonstate.pongbros.NinjaSprite")) {
+				} else if (isSelectingMonkey.equals("NinjaSprite")) {
 					if (checkIfCanPlaceMonkey()) g.setColor(new Color(255, 0, 0, 100));
 					else g.setColor(new Color(0, 0, 0, 100));
 
 					g.fillOval(mouseX - NinjaSprite.radius, mouseY - NinjaSprite.radius, NinjaSprite.radius * 2, NinjaSprite.radius * 2);
 					NinjaSprite.drawPreview(g, mouseX - (BloonsRunner.PATH_WIDTH / 2), mouseY - (BloonsRunner.PATH_WIDTH / 2));
-				} else if (isSelectingMonkey.equals("edu.oregonstate.pongbros.SuperMonkeySprite")) {
+				} else if (isSelectingMonkey.equals("SuperMonkeySprite")) {
 					if (checkIfCanPlaceMonkey()) g.setColor(new Color(255, 0, 0, 100));
 					else g.setColor(new Color(0, 0, 0, 100));
 
@@ -458,21 +458,21 @@ public class BloonsWindow extends JPanel implements ActionListener, KeyListener,
 
 			if (isSelectingMonkey.equals("no")) {
 				if (MonkeySprite.price <= BloonsRunner.money && monkeySpriteButton.checkCoordinates(mouseX, mouseY)) {
-					isSelectingMonkey = "edu.oregonstate.pongbros.MonkeySprite";
+					isSelectingMonkey = "MonkeySprite";
 				} else if (NinjaSprite.price <= BloonsRunner.money && ninjaSpriteButton.checkCoordinates(mouseX, mouseY)) {
-					isSelectingMonkey = "edu.oregonstate.pongbros.NinjaSprite";
+					isSelectingMonkey = "NinjaSprite";
 				} else if (SuperMonkeySprite.price <= BloonsRunner.money && superMonkeySpriteButton.checkCoordinates(mouseX, mouseY)) {
-					isSelectingMonkey = "edu.oregonstate.pongbros.SuperMonkeySprite";
+					isSelectingMonkey = "SuperMonkeySprite";
 				}
 			} else {
 				if (!checkIfCanPlaceMonkey()) {
-					if (isSelectingMonkey.equals("edu.oregonstate.pongbros.MonkeySprite")) {
+					if (isSelectingMonkey.equals("MonkeySprite")) {
 						MonkeySprite.monkeys.add(new MonkeySprite(mouseX - (BloonsRunner.PATH_WIDTH / 2), mouseY - (BloonsRunner.PATH_WIDTH / 2)));
 						BloonsRunner.money -= MonkeySprite.price;
-					} else if (isSelectingMonkey.equals("edu.oregonstate.pongbros.NinjaSprite")) {
+					} else if (isSelectingMonkey.equals("NinjaSprite")) {
 						NinjaSprite.monkeys.add(new NinjaSprite(mouseX - (BloonsRunner.PATH_WIDTH / 2), mouseY - (BloonsRunner.PATH_WIDTH / 2)));
 						BloonsRunner.money -= NinjaSprite.price;
-					} else if (isSelectingMonkey.equals("edu.oregonstate.pongbros.SuperMonkeySprite")) {
+					} else if (isSelectingMonkey.equals("SuperMonkeySprite")) {
 						SuperMonkeySprite.monkeys.add(new SuperMonkeySprite(mouseX - (BloonsRunner.PATH_WIDTH / 2), mouseY - (BloonsRunner.PATH_WIDTH / 2)));
 						BloonsRunner.money -= SuperMonkeySprite.price;
 					}

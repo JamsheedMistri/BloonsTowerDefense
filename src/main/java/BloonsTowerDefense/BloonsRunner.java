@@ -1,4 +1,4 @@
-package edu.oregonstate.pongbros;
+package BloonsTowerDefense;
 
 import javax.swing.*;
 

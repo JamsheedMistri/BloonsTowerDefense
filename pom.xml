@@ -32,7 +32,7 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <version>1.2.1</version>
                 <configuration>
-                    <mainClass>edu.oregonstate.pongbros.BloonsRunner</mainClass>
+                    <mainClass>BloonsTowerDefense.BloonsRunner</mainClass>
                 </configuration>
             </plugin>
 

@@ -1,4 +1,4 @@
-package edu.oregonstate.pongbros;
+package BloonsTowerDefense;
 
 public class CornMap extends GameMap {
 	String name;

@@ -1,4 +1,4 @@
-package edu.oregonstate.pongbros;
+package BloonsTowerDefense;
 
 import java.awt.Color;
 import java.awt.Graphics;
