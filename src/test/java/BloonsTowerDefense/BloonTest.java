@@ -46,12 +46,14 @@ public class BloonTest {
       
         assertEquals(-1, bloon.getCoordinates()[0]);
         assertEquals(-1, bloon.getCoordinates()[1]);
+        bloon.pop();
+        assertEquals(-2,bloon.layers);
 
     }
   
     @Test
     public void testSpriteSpawn(){
-        Sprite sprite1 = new Sprite(1, 2) {
+        Sprite sprite1 = new Sprite(0, 0) {
             @Override
             public void shoot() {
 
@@ -62,8 +64,21 @@ public class BloonTest {
 
             }
         };
-        assertEquals(1,sprite1.getX());
-        assertEquals(2,sprite1.getY());
+        assertEquals(0,sprite1.getX());
+        assertEquals(0,sprite1.getY());
+        Sprite sprite2 = new Sprite(100, 100) {
+            @Override
+            public void shoot() {
+
+            }
+
+            @Override
+            public void draw(Graphics g) {
+
+            }
+        };
+        assertEquals(100,sprite2.getX());
+        assertEquals(100,sprite2.getY());
         Sprite monkey1 = new MonkeySprite(3,4);
         assertEquals(3,monkey1.getX());
         assertEquals(4,monkey1.getY());
